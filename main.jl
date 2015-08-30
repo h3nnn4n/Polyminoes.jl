@@ -11,30 +11,38 @@ type Board
 end
 
 square = Piece([(1,1), (1,2), (2,1), (2,2)], 1, 4, 1)
+stick  = Piece([(1,1), (2,1), (3,1), (4,1)], 2, 4, 2)
 
 function getRectangleBoard(x :: Int64, y :: Int64)
     return Board((x, y), zeros(Int64, (x, y)))
 end
 
-function canFit(board, piece :: Piece, x :: Int64, y :: Int64)
+function canFit(board :: Board, piece :: Piece, x :: Int64, y :: Int64)
+    bx, by = board.size
     for p in piece.cubits
-        if board.squares[x + p[1] - 1, y + p[2] - 1] != 0
+        posx, posy = x + p[1] - 1, y + p[2] - 1
+        if posx > bx || posy > by
             return false
+        else
+            if board.squares[posx, posy] != 0
+                return false
+            end
         end
     end
 
     return true
 end
 
-function putPiece(board, piece :: Piece,  x :: Int64, y :: Int64)
+function putPiece(board :: Board, piece :: Piece,  x :: Int64, y :: Int64)
     for p in piece.cubits
-        board.squares[x + p[1] - 1, y + p[2] - 1] = piece.id
+        posx, posy = x + p[1] - 1, y + p[2] - 1
+        board.squares[posx, posy] = piece.id
     end
 
     return board
 end
 
-function fitPiece(board, piece :: Piece)
+function fitPiece(board :: Board, piece :: Piece)
     x, y = board.size
 
     for i = 1:x, j in 1:y
@@ -45,4 +53,58 @@ function fitPiece(board, piece :: Piece)
     end
 
     return board
+end
+
+function isFilled(board :: Board)
+    x, y = board.size
+
+    for i = 1:x, j = 1:y
+        if board.squares[i, j] == 0
+            return false
+        end
+    end
+
+    return true
+end
+
+function solvePool(board :: Board, pool :: Array{Piece})
+    x, y = board.size
+
+    for (n, p) in enumerate(pool)
+        for i in 1:x, j in 1:y
+            if canFit(board, p, i, j)
+                newBoard = deepcopy(board)
+                newPool  = deepcopy(pool)
+                putPiece(newBoard, p, i, j)
+
+                splice!(newPool, n)
+                if length(newPool) == 0 && isFilled(newBoard)
+                    println(newBoard.squares)
+                    return true
+                end
+
+                result = solvePool((newBoard), newPool)
+
+                if result
+                    board = newBoard
+                    return true
+                end
+            end
+        end
+    end
+
+    return false
+end
+
+function main()
+    board = getRectangleBoard(4, 4)
+
+    pool  = Piece[]
+
+    push!(pool, square)
+    push!(pool, stick)
+    push!(pool, stick)
+    push!(pool, square)
+
+    solvePool(board, pool)
 end
