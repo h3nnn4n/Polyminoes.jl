@@ -85,6 +85,15 @@ function putPiece(board :: Board, piece :: Node, id :: Int64,  x :: Int64, y :: 
     return board
 end
 
+function removePiece(board :: Board, piece :: Node, x :: Int64, y :: Int64)
+    for p in piece.cubes
+        posx, posy = x + p[1] - 1, y + p[2] - 1
+        board.squares[posx, posy] = 0
+    end
+
+    return board
+end
+
 function fitPiece(board :: Board, piece :: Node)
     x, y = board.size
 
@@ -110,44 +119,57 @@ function isFilled(board :: Board)
     return true
 end
 
-
-function solvePool(board :: Board, pool :: Array{Piece}, lvl :: Int64 = 1)
+function solvePool(board :: Board, pool :: Array{Piece}, lvl :: Int64 = 1, poolCtrl = None)
     x, y = board.size
     iter = 0
+    poolSize = length(pool)
 
-    if lvl == 0 && length(pool) * 4 != x * y
+    if lvl == 1
+        poolControl = trues(poolSize)
+    else
+        poolControl = poolCtrl
+    end
+
+    if lvl == 1 && length(pool) * 4 != x * y
         println("Error")
         println(length(pool) * 4, " != ", x*y)
     end
 
-    for (n, pp) in enumerate(pool)
-        for i in 1:x, j in 1:y
-            #=if lvl == 5=#
-                #=println("i = $i \t j = $j")=#
-            #=end=#
+    for i in 1:x, j in 1:y
+        for (n, pp) in enumerate(pool)
+            for np in 1:poolSize
+                #=println(np, " ", poolControl, " ", lvl)=#
+                if poolControl[np]
+                    piece = pool[np]
+                    #=println(piece)=#
+                    iter += 1
 
-            for p in pp.cubits
-                iter += 1
-                if mod(iter, 1000) == 0
-                    #=println(board.squares)=#
-                end
+                    for p in piece.cubits
+                        if canFit(board, p, i, j)
+                            poolControl[np] = false
+                            putPiece(board, p, piece.id, i, j)
 
-                if canFit(board, p, i, j)
-                    newBoard = deepcopy(board)
-                    newPool  = deepcopy(pool)
-                    putPiece(newBoard, p, pp.id, i, j)
+                            if isFilled(board)
+                                q  = false
+                                for w in poolControl
+                                    q |= w
+                                end
 
-                    splice!(newPool, n)
-                    if length(newPool) == 0 && isFilled(newBoard)
-                        println(newBoard)
-                        return true
-                    end
+                                if !q
+                                    println(board)
+                                    return true
+                                end
+                            end
 
-                    result = solvePool((newBoard), newPool, lvl + 1)
+                            result = solvePool(board, pool, lvl + 1, poolControl)
 
-                    if result
-                        board = newBoard
-                        return true
+                            if result
+                                return true
+                            else
+                                removePiece(board, p, i, j)
+                                poolControl[np] = true
+                            end
+                        end
                     end
                 end
             end
@@ -158,6 +180,24 @@ function solvePool(board :: Board, pool :: Array{Piece}, lvl :: Int64 = 1)
 end
 
 function main()
+    #=board = getRectangleBoard(8, 5)=#
+    #=pool  = Piece[]=#
+
+    #=push!(pool, triangle)=#
+    #=push!(pool, triangle)=#
+    #=push!(pool, lllll)=#
+    #=push!(pool, sssss)=#
+    #=push!(pool, zzzzz)=#
+    #=push!(pool, triangle)=#
+    #=push!(pool, triangle)=#
+    #=push!(pool, lllll)=#
+    #=push!(pool, sssss)=#
+    #=push!(pool, zzzzz)=#
+
+    #=solvePool(board, pool)=#
+
+    #=return=#
+
     x, y = 4, 4
 
     board = getRectangleBoard(x, y)
@@ -207,6 +247,7 @@ function main()
     solvePool(board, pool)
 
     #################################
+    return
 
     board = getRectangleBoard(8, 8)
     pool  = Piece[]
