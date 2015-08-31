@@ -170,6 +170,7 @@ function main()
 
     solvePool(board, pool)
 
+    #################################
 
     board = getRectangleBoard(x, y)
     pool  = Piece[]
@@ -181,6 +182,7 @@ function main()
 
     solvePool(board, pool)
 
+    #################################
 
     board = getRectangleBoard(x, y)
     pool  = Piece[]
@@ -192,6 +194,7 @@ function main()
 
     solvePool(board, pool)
 
+    #################################
 
     board = getRectangleBoard(x, y)
     pool  = Piece[]
@@ -203,6 +206,32 @@ function main()
 
     solvePool(board, pool)
 
+    #################################
+
+    board = getRectangleBoard(8, 8)
+    pool  = Piece[]
+
+    push!(pool, stick)
+    push!(pool, stick)
+    push!(pool, stick)
+    push!(pool, stick)
+
+    push!(pool, square)
+    push!(pool, square)
+    push!(pool, square)
+    push!(pool, square)
+
+    push!(pool, lllll)
+    push!(pool, lllll)
+    push!(pool, lllll)
+    push!(pool, lllll)
+
+    push!(pool, triangle)
+    push!(pool, triangle)
+    push!(pool, triangle)
+    push!(pool, triangle)
+
+    solvePool(board, pool)
 
     #=push!(pool, triangle)=#
     #=push!(pool, stick)=#
