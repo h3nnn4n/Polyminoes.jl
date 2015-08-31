@@ -21,4 +21,4 @@ Usage example: Fit a stick, L, J and Z in a 4x4 square
 
 
 
-For now the code works for small shapes, like 4x4 and 4x5, more than... It sucks :)
+For now the code works for small shapes, like 4x4 and 4x5, more than that... good luck :)
