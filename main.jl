@@ -40,6 +40,22 @@ lllll    = Piece([Node([(1,1), (2,1), (2,2), (2,3)]),
                   Node([(1,1), (1,2), (1,3), (2,3)]),
                   Node([(1,2), (1,1), (2,1), (3,1)])], 4, 4, 7)
 
+Base.println(board :: Board) = print(board :: Board)
+
+function Base.print(board :: Board)
+    colors = [:red, :green, :blue, :yellow, :cyan, :magenta, :white]
+    bx, by = board.size
+
+    for i in 1:bx
+        for j in 1:by
+            print_with_color(colors[board.squares[i, j]], string(board.squares[i, j]))
+        end
+        println("")
+    end
+    println("")
+
+end
+
 function getRectangleBoard(x :: Int64, y :: Int64)
     return Board((x, y), zeros(Int64, (x, y)))
 end
@@ -123,7 +139,7 @@ function solvePool(board :: Board, pool :: Array{Piece}, lvl :: Int64 = 1)
 
                     splice!(newPool, n)
                     if length(newPool) == 0 && isFilled(newBoard)
-                        println(newBoard.squares)
+                        println(newBoard)
                         return true
                     end
 
