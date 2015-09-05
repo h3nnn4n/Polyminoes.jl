@@ -1,3 +1,5 @@
+include("solvers.jl")
+
 function tester(board, pool)
     b1 = deepcopy(board)
     b2 = deepcopy(board)
@@ -8,7 +10,7 @@ function tester(board, pool)
     p3 = deepcopy(pool)
 
     tic()
-    solvePool(b1, p1, 1, trues(length(pool)))
+    #=solvePool(b1, p1, 1, trues(length(pool)))=#
     t1 = toq()
 
     tic()
@@ -23,13 +25,16 @@ function tester(board, pool)
 end
 
 function main()
-    x, y = 4, 6
+    x, y = 4, 9
 
     board = getRectangleBoard(x, y)
     pool  = Piece[]
 
     push!(pool, triangle)
     push!(pool, triangle)
+    push!(pool, triangle)
+    push!(pool, square)
+    push!(pool, square)
     push!(pool, triangle)
     push!(pool, square)
     push!(pool, square)

@@ -1,3 +1,5 @@
+include("main.jl")
+
 function solvePoolOld(board :: Board, pool :: Array{Piece}, lvl :: Int64 = 1)
     x, y = board.size
 
@@ -53,14 +55,14 @@ function solvePoolTopLeftMost(board :: Board, pool :: Array{Piece}, lvl :: Int64
         println(length(pool) * 4, " != ", x*y)
     end
 
-    for (n, pp) in enumerate(pool)
+    for i in 1:x, j in 1:y
+        for (n, pp) in enumerate(pool)
             for np in 1:poolSize
                 if poolControl[np]
                     piece = pool[np]
                     iter += 1
 
                     for p in piece.cubits
-        for i in 1:x, j in 1:y
                         if canFit(board, p, i, j)
                             poolControl[np] = false
                             putPiece(board, p, piece.id, i, j)
@@ -77,7 +79,7 @@ function solvePoolTopLeftMost(board :: Board, pool :: Array{Piece}, lvl :: Int64
                                 return true
                             end
 
-                            result = solvePool(board, pool, lvl + 1, poolControl)
+                            result = solvePoolTopLeftMost(board, pool, lvl + 1, poolControl)
 
                             if result
                                 return true
@@ -96,7 +98,7 @@ function solvePoolTopLeftMost(board :: Board, pool :: Array{Piece}, lvl :: Int64
     return false
 end
 
-function solvePool(board :: Board, pool :: Array{Piece}, lvl :: Int64, poolControl :: Array{Piece})
+function solvePool   (board :: Board, pool :: Array{Piece}, lvl :: Int64, poolControl)
     x, y = board.size
     poolSize = length(pool)
 
@@ -107,37 +109,38 @@ function solvePool(board :: Board, pool :: Array{Piece}, lvl :: Int64, poolContr
 
     for i in 1:x, j in 1:y
         if board.squares[i, j] != 0
-            continue
-        end
-        for (n, pp) in enumerate(pool)
-            for np in 1:poolSize
-                if poolControl[np]
-                    piece = pool[np]
+            #=continue=#
+        else
+            for (n, pp) in enumerate(pool)
+                for np in 1:poolSize
+                    if poolControl[np]
+                        piece = pool[np]
 
-                    for p in piece.cubits
-                        if canFit(board, p, i, j)
-                            poolControl[np] = false
-                            putPiece(board, p, piece.id, i, j)
+                        for p in piece.cubits
+                            if canFit(board, p, i, j)
+                                poolControl[np] = false
+                                putPiece(board, p, piece.id, i, j)
 
-                            q = true
-                            for w in poolControl
-                                if w
-                                    q = false
+                                q = true
+                                for w in poolControl
+                                    if w
+                                        q = false
+                                    end
                                 end
-                            end
 
-                            if q && isFilled(board)
-                                output && println(board)
-                                return true
-                            end
+                                if q && isFilled(board)
+                                    output && println(board)
+                                    return true
+                                end
 
-                            result = solvePool(board, pool, lvl + 1, poolControl)
+                                result = solvePool(board, pool, lvl + 1, poolControl)
 
-                            if result
-                                return true
-                            else
-                                removePiece(board, p, i, j)
-                                poolControl[np] = true
+                                if result
+                                    return true
+                                else
+                                    removePiece(board, p, i, j)
+                                    poolControl[np] = true
+                                end
                             end
                         end
                     end
